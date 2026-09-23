@@ -1,153 +1,302 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="emerald">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NexusPad - Minimalist Notes</title>
+    <title>NexusPad Pro - Advanced Workspace</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- CryptoJS for Client-Side AES Encryption -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        themeBase: 'var(--bg-base)',
+                        themePanel: 'var(--bg-panel)',
+                        themeBorder: 'var(--border-color)',
+                        themeAccent: 'var(--accent-color)'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Dynamic Theme Variables */
+        :root[data-theme="emerald"] { --bg-base: #030712; --bg-panel: #111827; --border-color: #1f2937; --accent-color: #10b981; }
+        :root[data-theme="cyberpunk"] { --bg-base: #05050a; --bg-panel: #0f0f1a; --border-color: #1f1f3a; --accent-color: #f43f5e; }
+        :root[data-theme="midnight"] { --bg-base: #090d16; --bg-panel: #101726; --border-color: #1e293b; --accent-color: #6366f1; }
+        :root[data-theme="amber"] { --bg-base: #120e0a; --bg-panel: #1c1510; --border-color: #2e2118; --accent-color: #f59e0b; }
+        body { background-color: var(--bg-base); color: #f3f4f6; }
+    </style>
 </head>
-<body class="bg-slate-950 text-slate-100 h-[100dvh] flex flex-col overflow-hidden font-sans">
+<body class="h-[100dvh] flex flex-col overflow-hidden font-sans">
 
-    <!-- Sleek Top Header -->
-    <header class="bg-slate-900/80 backdrop-blur border-b border-slate-800 px-4 py-3 flex justify-between items-center shrink-0">
+    <!-- Top Header -->
+    <header class="bg-themePanel border-b border-themeBorder px-4 py-2.5 flex justify-between items-center shrink-0">
         <div class="flex items-center space-x-2">
-            <div class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></div>
-            <h1 class="font-bold tracking-wider text-sm bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">NEXUSPAD</h1>
+            <div class="w-2.5 h-2.5 rounded-full" style="background-color: var(--accent-color);"></div>
+            <h1 class="font-black tracking-wider text-sm">NEXUS<span style="color: var(--accent-color);">PAD</span></h1>
         </div>
         
-        <!-- Minimalist Actions -->
-        <div class="flex items-center space-x-1">
-            <button onclick="togglePreview()" id="previewBtn" class="px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 text-xs font-medium border border-slate-700 active:scale-95 transition">Preview</button>
-            <button onclick="openMenu()" class="p-1.5 rounded-lg bg-slate-800 text-slate-300 border border-slate-700">
+        <!-- Header Actions -->
+        <div class="flex items-center space-x-1.5">
+            <button onclick="togglePreview()" id="previewBtn" class="px-2.5 py-1 rounded-lg bg-themeBase text-xs font-medium border border-themeBorder active:scale-95 transition">Preview</button>
+            <button onclick="openStatsModal()" class="px-2.5 py-1 rounded-lg bg-themeBase text-xs font-medium border border-themeBorder">📊 Stats</button>
+            <button onclick="openMenu()" class="p-1.5 rounded-lg bg-themeBase border border-themeBorder">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/></svg>
             </button>
         </div>
     </header>
 
     <!-- Main Workspace -->
-    <main class="flex-1 flex flex-col relative overflow-hidden">
+    <main class="flex-1 flex relative overflow-hidden">
         <!-- Editor View -->
-        <textarea id="notepad" class="w-full h-full bg-slate-950 p-4 text-slate-100 text-base leading-relaxed focus:outline-none resize-none font-mono" placeholder="Type your notes here..."></textarea>
+        <textarea id="notepad" class="w-full h-full bg-themeBase p-4 text-slate-100 text-sm leading-relaxed focus:outline-none resize-none font-mono" placeholder="Type notes or markdown here..."></textarea>
         
-        <!-- Preview View -->
-        <div id="previewPane" class="w-full h-full bg-slate-900 p-5 overflow-y-auto hidden prose prose-invert max-w-none text-sm"></div>
+        <!-- Markdown & Outline Preview View -->
+        <div id="previewPane" class="w-full h-full bg-themePanel/40 p-5 overflow-y-auto hidden prose prose-invert max-w-none text-sm"></div>
     </main>
 
     <!-- Bottom Action Toolbar -->
-    <nav class="bg-slate-900 border-t border-slate-800 px-4 py-2.5 flex justify-around items-center shrink-0">
-        <button onclick="createNewNote()" class="flex flex-col items-center text-slate-400 hover:text-emerald-400 text-[10px] font-medium">
-            <span class="text-lg mb-0.5">➕</span> New
+    <nav class="bg-themePanel border-t border-themeBorder px-2 py-2 flex justify-around items-center shrink-0 text-[10px]">
+        <button onclick="createNewNote()" class="flex flex-col items-center text-slate-400 hover:text-slate-100">
+            <span class="text-base mb-0.5">➕</span> New
         </button>
-        <button onclick="copyToClipboard()" class="flex flex-col items-center text-slate-400 hover:text-cyan-400 text-[10px] font-medium">
-            <span class="text-lg mb-0.5">📋</span> Copy
+        <button onclick="toggleEncryptNote()" id="lockBtn" class="flex flex-col items-center text-slate-400 hover:text-slate-100">
+            <span class="text-base mb-0.5">🔒</span> Lock
         </button>
-        <button onclick="downloadNote()" class="flex flex-col items-center text-slate-400 hover:text-indigo-400 text-[10px] font-medium">
-            <span class="text-lg mb-0.5">📥</span> Export
+        <button onclick="generateShareLink()" class="flex flex-col items-center text-slate-400 hover:text-slate-100">
+            <span class="text-base mb-0.5">🔗</span> Share Link
         </button>
-        <button onclick="clearCurrentNote()" class="flex flex-col items-center text-slate-400 hover:text-red-400 text-[10px] font-medium">
-            <span class="text-lg mb-0.5">🗑️</span> Clear
+        <button onclick="exportFile('txt')" class="flex flex-col items-center text-slate-400 hover:text-slate-100">
+            <span class="text-base mb-0.5">📄</span> TXT
+        </button>
+        <button onclick="exportFile('html')" class="flex flex-col items-center text-slate-400 hover:text-slate-100">
+            <span class="text-base mb-0.5">🌐</span> HTML
+        </button>
+        <button onclick="clearCurrentNote()" class="flex flex-col items-center text-red-400">
+            <span class="text-base mb-0.5">🗑️</span> Clear
         </button>
     </nav>
 
-    <!-- Slide-out Menu for Notes Management & Ads -->
-    <div id="sideMenu" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden transition-opacity">
-        <div class="absolute right-0 top-0 bottom-0 w-4/5 max-w-xs bg-slate-900 border-l border-slate-800 p-4 flex flex-col">
-            <div class="flex justify-between items-center mb-4 border-b border-slate-800 pb-3">
-                <h2 class="font-bold text-sm text-slate-200">Your Documents</h2>
-                <button onclick="closeMenu()" class="text-slate-400 text-lg">&times;</button>
+    <!-- Slide-out Drawer Menu -->
+    <div id="sideMenu" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden transition-opacity">
+        <div class="absolute right-0 top-0 bottom-0 w-4/5 max-w-xs bg-themePanel border-l border-themeBorder p-4 flex flex-col">
+            <div class="flex justify-between items-center mb-3 border-b border-themeBorder pb-2">
+                <h2 class="font-bold text-xs uppercase tracking-wider text-slate-300">Workspace & Settings</h2>
+                <button onclick="closeMenu()" class="text-slate-400 text-base">&times;</button>
             </div>
             
-            <div id="notesList" class="flex-1 overflow-y-auto space-y-2 mb-4">
-                <!-- Notes injected dynamically -->
+            <!-- Theme Selector -->
+            <div class="mb-3">
+                <span class="text-[10px] text-slate-400 block mb-1">Color Theme</span>
+                <div class="grid grid-cols-4 gap-1.5">
+                    <button onclick="setTheme('emerald')" class="h-6 rounded bg-emerald-500 text-[9px] font-bold text-black">Emerald</button>
+                    <button onclick="setTheme('cyberpunk')" class="h-6 rounded bg-rose-500 text-[9px] font-bold text-black">Cyber</button>
+                    <button onclick="setTheme('midnight')" class="h-6 rounded bg-indigo-500 text-[9px] font-bold text-white">Midnight</button>
+                    <button onclick="setTheme('amber')" class="h-6 rounded bg-amber-500 text-[9px] font-bold text-black">Amber</button>
+                </div>
             </div>
 
-            <!-- Monetag Ad Placement Box -->
-            <div class="bg-slate-950 border border-slate-800 rounded-xl p-3 text-center">
-                <span class="text-[9px] text-slate-500 uppercase tracking-wider block mb-1">Sponsored</span>
-                <!-- PASTE YOUR MONETAG MULTITAG SCRIPT INSIDE OR BELOW -->
-                <div class="h-16 bg-slate-900/50 rounded border border-dashed border-slate-800 flex items-center justify-center text-[10px] text-slate-500">
-                    Ad Unit Zone
+            <div class="text-[10px] text-slate-400 mb-1">Saved Documents</div>
+            <div id="notesList" class="flex-1 overflow-y-auto space-y-1.5 mb-3"></div>
+
+            <!-- Monetag MultiTag Ad Zone -->
+            <div class="bg-themeBase border border-themeBorder rounded-lg p-2.5 text-center">
+                <span class="text-[9px] text-slate-500 uppercase tracking-wider block mb-1">Sponsored Ad Unit</span>
+                <!-- PASTE YOUR MONETAG MULTITAG SCRIPT HERE -->
+                <div class="h-14 bg-themePanel rounded border border-dashed border-themeBorder flex items-center justify-center text-[10px] text-slate-500">
+                    Monetag Integration Zone
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Analytics Modal -->
+    <div id="statsModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-themePanel border border-themeBorder rounded-xl p-4 w-full max-w-xs">
+            <h3 class="font-bold text-sm mb-3 text-slate-200">Document Analytics</h3>
+            <div class="space-y-2 text-xs text-slate-300 mb-4" id="statsContent"></div>
+            <button onclick="closeStatsModal()" class="w-full py-1.5 rounded bg-themeBase border border-themeBorder text-xs font-bold">Close</button>
+        </div>
+    </div>
+
     <!-- Script Logic -->
     <script>
-        let notes = JSON.parse(localStorage.getItem('nexus_v2_notes')) || [
-            { id: '1', title: 'Welcome Note', content: '# Welcome to NexusPad\n\n- Clean minimalist layout\n- Tap bottom bar for actions\n- Open menu for saved notes' }
+        let notes = JSON.parse(localStorage.getItem('nexus_v3_notes')) || [
+            { id: '1', title: 'Welcome Document', content: '# Welcome to NexusPad Pro\n\n- End-to-end local encryption support\n- Share notes instantly via URL hash\n- Multiple themes & advanced stats', password: null }
         ];
         let currentId = notes[0].id;
         let isPreview = false;
+        let currentTheme = localStorage.getItem('nexus_theme') || 'emerald';
+        setTheme(currentTheme, false);
 
         const notepad = document.getElementById('notepad');
         const previewPane = document.getElementById('previewPane');
 
+        // Check URL Hash on Load for Shared Notes
+        window.addEventListener('DOMContentLoaded', () => {
+            if(window.location.hash.startsWith('#note=')) {
+                try {
+                    const encodedData = window.location.hash.replace('#note=', '');
+                    const decodedText = decodeURIComponent(atob(encodedData));
+                    const newId = Date.now().toString();
+                    notes.push({ id: newId, title: 'Shared Note', content: decodedText, password: null });
+                    currentId = newId;
+                    saveNotes();
+                    window.location.hash = ''; // clear hash
+                } catch(e) { console.error("Failed to parse shared note"); }
+            }
+            loadNote();
+        });
+
         function loadNote() {
             const note = notes.find(n => n.id === currentId);
-            if (note) notepad.value = note.content;
+            if (!note) return;
+            if (note.password) {
+                const pass = prompt("This note is encrypted. Enter password:");
+                try {
+                    const bytes = CryptoJS.AES.decrypt(note.content, pass);
+                    notepad.value = bytes.toString(CryptoJS.enc.Utf8) || "Decryption failed.";
+                } catch(e) { notepad.value = "Error unlocking note."; }
+            } else {
+                notepad.value = note.content;
+            }
+            updateLockBtnState();
         }
 
         notepad.addEventListener('input', () => {
             const note = notes.find(n => n.id === currentId);
-            if (note) {
+            if (note && !note.password) {
                 note.content = notepad.value;
                 const firstLine = notepad.value.split('\n')[0].trim();
-                note.title = firstLine ? firstLine.substring(0, 18) + (firstLine.length > 18 ? '...' : '') : 'Untitled Note';
-                localStorage.setItem('nexus_v2_notes', JSON.stringify(notes));
+                note.title = firstLine ? firstLine.substring(0, 18) + (firstLine.length > 18 ? '...' : '') : 'Untitled';
+                saveNotes();
             }
         });
+
+        function saveNotes() { localStorage.setItem('nexus_v3_notes', JSON.stringify(notes)); }
 
         function togglePreview() {
             isPreview = !isPreview;
             const btn = document.getElementById('previewBtn');
             if (isPreview) {
-                btn.classList.add('bg-emerald-600', 'text-white', 'border-emerald-500');
+                btn.style.backgroundColor = 'var(--accent-color)';
+                btn.style.color = '#000';
                 previewPane.innerHTML = marked.parse(notepad.value);
                 notepad.classList.add('hidden');
                 previewPane.classList.remove('hidden');
             } else {
-                btn.classList.remove('bg-emerald-600', 'text-white', 'border-emerald-500');
+                btn.style.backgroundColor = '';
+                btn.style.color = '';
                 notepad.classList.remove('hidden');
                 previewPane.classList.add('hidden');
             }
         }
+
+        function setTheme(themeName, save=true) {
+            currentTheme = themeName;
+            document.documentElement.setAttribute('data-theme', themeName);
+            if(save) localStorage.setItem('nexus_theme', themeName);
+        }
+
+        function toggleEncryptNote() {
+            const note = notes.find(n => n.id === currentId);
+            if(note.password) {
+                if(confirm("Remove password protection?")) {
+                    const pass = prompt("Enter current password:");
+                    try {
+                        const bytes = CryptoJS.AES.decrypt(note.content, pass);
+                        note.content = bytes.toString(CryptoJS.enc.Utf8);
+                        note.password = null;
+                        saveNotes();
+                        alert("Note decrypted!");
+                    } catch(e) { alert("Incorrect password!"); }
+                }
+            } else {
+                const pass = prompt("Set a password to encrypt this note locally:");
+                if(pass) {
+                    note.content = CryptoJS.AES.encrypt(notepad.value, pass).toString();
+                    note.password = true;
+                    saveNotes();
+                    alert("Note encrypted securely!");
+                }
+            }
+            updateLockBtnState();
+        }
+
+        function updateLockBtnState() {
+            const note = notes.find(n => n.id === currentId);
+            const btn = document.getElementById('lockBtn');
+            btn.style.color = note?.password ? 'var(--accent-color)' : '';
+        }
+
+        function generateShareLink() {
+            const note = notes.find(n => n.id === currentId);
+            if(note.password) { alert("Cannot share encrypted notes via link."); return; }
+            const encoded = btoa(encodeURIComponent(notepad.value));
+            const shareUrl = `${window.location.origin}${window.location.pathname}#note=${encoded}`;
+            navigator.clipboard.writeText(shareUrl);
+            alert("Shareable link copied to clipboard! (Data is embedded directly in URL hash)");
+        }
+
+        function exportFile(type) {
+            let blob, filename;
+            if(type === 'txt') {
+                blob = new Blob([notepad.value], { type: 'text/plain' });
+                filename = 'note.txt';
+            } else {
+                const htmlContent = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Note</title></head><body style="font-family:sans-serif;padding:2rem;max-width:800px;margin:auto;">${marked.parse(notepad.value)}</body></html>`;
+                blob = new Blob([htmlContent], { type: 'text/html' });
+                filename = 'note.html';
+            }
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = filename;
+            a.click();
+        }
+
+        function openStatsModal() {
+            const text = notepad.value;
+            const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+            const chars = text.length;
+            const readingTime = Math.ceil(words / 200); // avg 200 words per minute
+            
+            document.getElementById('statsContent').innerHTML = `
+                <div class="flex justify-between border-b border-themeBorder pb-1"><span>Word Count:</span> <strong>${words}</strong></div>
+                <div class="flex justify-between border-b border-themeBorder pb-1"><span>Character Count:</span> <strong>${chars}</strong></div>
+                <div class="flex justify-between"><span>Est. Reading Time:</span> <strong>${readingTime} min(s)</strong></div>
+            `;
+            document.getElementById('statsModal').classList.remove('hidden');
+        }
+        function closeStatsModal() { document.getElementById('statsModal').classList.add('hidden'); }
 
         function openMenu() {
             const list = document.getElementById('notesList');
             list.innerHTML = '';
             notes.forEach(n => {
                 const item = document.createElement('div');
-                item.className = `p-2.5 rounded-lg text-xs cursor-pointer flex justify-between items-center ${n.id === currentId ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' : 'bg-slate-950 text-slate-300'}`;
-                item.innerHTML = `<span>${n.title}</span>`;
+                item.className = `p-2 rounded text-xs cursor-pointer flex justify-between items-center ${n.id === currentId ? 'bg-themeBase font-bold border border-themeBorder' : 'text-slate-400'}`;
+                item.innerHTML = `<span>${n.title} ${n.password ? '🔒' : ''}</span>`;
                 item.onclick = () => { currentId = n.id; loadNote(); closeMenu(); };
                 list.appendChild(item);
             });
             document.getElementById('sideMenu').classList.remove('hidden');
         }
-
         function closeMenu() { document.getElementById('sideMenu').classList.add('hidden'); }
         function createNewNote() {
             const id = Date.now().toString();
-            notes.push({ id, title: 'New Note', content: 'Start writing...' });
+            notes.push({ id, title: 'New Note', content: 'Start typing...', password: null });
             currentId = id;
-            localStorage.setItem('nexus_v2_notes', JSON.stringify(notes));
+            saveNotes();
             loadNote();
         }
-        function copyToClipboard() { navigator.clipboard.writeText(notepad.value); alert('Copied!'); }
-        function downloadNote() {
-            const blob = new Blob([notepad.value], { type: 'text/plain' });
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = 'note.txt';
-            a.click();
-        }
         function clearCurrentNote() {
-            if(confirm('Clear this note?')) { notepad.value = ''; notepad.dispatchEvent(new Event('input')); }
+            if(confirm('Clear current note?')) { notepad.value = ''; notepad.dispatchEvent(new Event('input')); }
         }
-
-        loadNote();
     </script>
 </body>
 </html>
