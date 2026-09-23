@@ -1,271 +1,153 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NexusPad Pro - Advanced Online Notepad & Markdown Suite</title>
-    <!-- Tailwind CSS -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>NexusPad - Minimalist Notes</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        darkBg: '#0f172a',
-                        darkPanel: '#1e293b',
-                        darkBorder: '#334155'
-                    }
-                }
-            }
-        }
-    </script>
-    <!-- Marked.js for Markdown Rendering -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
-<body class="bg-darkBg text-slate-100 h-screen flex flex-col font-sans overflow-hidden">
+<body class="bg-slate-950 text-slate-100 h-[100dvh] flex flex-col overflow-hidden font-sans">
 
-    <!-- Top Navigation Bar -->
-    <header class="bg-darkPanel border-b border-darkBorder px-4 py-2.5 flex justify-between items-center shadow-md">
-        <div class="flex items-center space-x-3">
-            <span class="text-xl font-black tracking-wider text-emerald-400">NEXUS<span class="text-indigo-400">PAD</span></span>
-            <span class="text-xs bg-indigo-500/20 text-indigo-300 px-2 py-0.5 rounded-full border border-indigo-500/30 hidden sm:inline-block">Pro Edition</span>
+    <!-- Sleek Top Header -->
+    <header class="bg-slate-900/80 backdrop-blur border-b border-slate-800 px-4 py-3 flex justify-between items-center shrink-0">
+        <div class="flex items-center space-x-2">
+            <div class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></div>
+            <h1 class="font-bold tracking-wider text-sm bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">NEXUSPAD</h1>
         </div>
         
-        <!-- Toolbar Actions -->
-        <div class="flex items-center space-x-2">
-            <button onclick="togglePreview()" id="previewBtn" class="bg-slate-700 hover:bg-slate-600 px-3 py-1.5 rounded text-xs font-semibold transition flex items-center space-x-1">
-                <span>👁️ Toggle Preview</span>
-            </button>
-            <button onclick="downloadNote()" class="bg-emerald-600 hover:bg-emerald-700 px-3 py-1.5 rounded text-xs font-semibold transition">
-                📥 Export TXT
-            </button>
-            <button onclick="copyToClipboard()" class="bg-indigo-600 hover:bg-indigo-700 px-3 py-1.5 rounded text-xs font-semibold transition">
-                📋 Copy
-            </button>
-            <button onclick="clearCurrentNote()" class="bg-red-600/80 hover:bg-red-600 px-3 py-1.5 rounded text-xs font-semibold transition">
-                🗑️ Clear
+        <!-- Minimalist Actions -->
+        <div class="flex items-center space-x-1">
+            <button onclick="togglePreview()" id="previewBtn" class="px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 text-xs font-medium border border-slate-700 active:scale-95 transition">Preview</button>
+            <button onclick="openMenu()" class="p-1.5 rounded-lg bg-slate-800 text-slate-300 border border-slate-700">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/></svg>
             </button>
         </div>
     </header>
 
-    <!-- Workspace Area -->
-    <div class="flex-1 flex overflow-hidden">
+    <!-- Main Workspace -->
+    <main class="flex-1 flex flex-col relative overflow-hidden">
+        <!-- Editor View -->
+        <textarea id="notepad" class="w-full h-full bg-slate-950 p-4 text-slate-100 text-base leading-relaxed focus:outline-none resize-none font-mono" placeholder="Type your notes here..."></textarea>
         
-        <!-- Sidebar: Tabs & Saved Notes -->
-        <aside class="w-64 bg-darkPanel/50 border-r border-darkBorder flex flex-col hidden md:flex">
-            <div class="p-3 border-b border-darkBorder flex justify-between items-center">
-                <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Your Documents</span>
-                <button onclick="createNewNote()" class="text-xs bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30 px-2 py-1 rounded font-bold transition">+ New</button>
-            </div>
-            <div id="tabList" class="flex-1 overflow-y-auto p-2 space-y-1">
-                <!-- Dynamically injected tabs -->
+        <!-- Preview View -->
+        <div id="previewPane" class="w-full h-full bg-slate-900 p-5 overflow-y-auto hidden prose prose-invert max-w-none text-sm"></div>
+    </main>
+
+    <!-- Bottom Action Toolbar -->
+    <nav class="bg-slate-900 border-t border-slate-800 px-4 py-2.5 flex justify-around items-center shrink-0">
+        <button onclick="createNewNote()" class="flex flex-col items-center text-slate-400 hover:text-emerald-400 text-[10px] font-medium">
+            <span class="text-lg mb-0.5">➕</span> New
+        </button>
+        <button onclick="copyToClipboard()" class="flex flex-col items-center text-slate-400 hover:text-cyan-400 text-[10px] font-medium">
+            <span class="text-lg mb-0.5">📋</span> Copy
+        </button>
+        <button onclick="downloadNote()" class="flex flex-col items-center text-slate-400 hover:text-indigo-400 text-[10px] font-medium">
+            <span class="text-lg mb-0.5">📥</span> Export
+        </button>
+        <button onclick="clearCurrentNote()" class="flex flex-col items-center text-slate-400 hover:text-red-400 text-[10px] font-medium">
+            <span class="text-lg mb-0.5">🗑️</span> Clear
+        </button>
+    </nav>
+
+    <!-- Slide-out Menu for Notes Management & Ads -->
+    <div id="sideMenu" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden transition-opacity">
+        <div class="absolute right-0 top-0 bottom-0 w-4/5 max-w-xs bg-slate-900 border-l border-slate-800 p-4 flex flex-col">
+            <div class="flex justify-between items-center mb-4 border-b border-slate-800 pb-3">
+                <h2 class="font-bold text-sm text-slate-200">Your Documents</h2>
+                <button onclick="closeMenu()" class="text-slate-400 text-lg">&times;</button>
             </div>
             
-            <!-- Sidebar Ad / Promo Space (Monetag MultiTag Location) -->
-            <div class="p-3 border-t border-darkBorder bg-darkPanel text-center">
-                <p class="text-[10px] text-slate-500 mb-1">Sponsored Ad Space</p>
-                <!-- PASTE YOUR MONETAG MULTITAG SCRIPT HERE -->
-                <div class="h-20 bg-slate-800/50 border border-dashed border-slate-700 rounded flex items-center justify-center text-xs text-slate-500">
-                    Ad Unit Placeholder
-                </div>
-            </div>
-        </aside>
-
-        <!-- Main Editor & Preview Split -->
-        <main class="flex-1 flex flex-col bg-darkBg relative">
-            
-            <!-- Mobile Tab Bar -->
-            <div class="md:hidden flex items-center bg-darkPanel border-b border-darkBorder overflow-x-auto p-2 space-x-2" id="mobileTabList">
-                <!-- Mobile dynamic tabs -->
+            <div id="notesList" class="flex-1 overflow-y-auto space-y-2 mb-4">
+                <!-- Notes injected dynamically -->
             </div>
 
-            <div class="flex-1 flex h-full overflow-hidden">
-                <!-- Text Area Editor -->
-                <div id="editorPane" class="flex-1 flex flex-col h-full">
-                    <textarea id="notepad" 
-                        class="w-full h-full bg-darkBg p-4 text-slate-100 focus:outline-none resize-none font-mono text-sm leading-relaxed" 
-                        placeholder="Start typing your notes, markdown, or code blocks here... Auto-saves instantly."></textarea>
-                </div>
-
-                <!-- Markdown Preview Pane (Hidden by default) -->
-                <div id="previewPane" class="flex-1 h-full bg-darkPanel/30 p-6 overflow-y-auto hidden prose prose-invert max-w-none border-l border-darkBorder">
-                    <!-- Rendered markdown outputs here -->
+            <!-- Monetag Ad Placement Box -->
+            <div class="bg-slate-950 border border-slate-800 rounded-xl p-3 text-center">
+                <span class="text-[9px] text-slate-500 uppercase tracking-wider block mb-1">Sponsored</span>
+                <!-- PASTE YOUR MONETAG MULTITAG SCRIPT INSIDE OR BELOW -->
+                <div class="h-16 bg-slate-900/50 rounded border border-dashed border-slate-800 flex items-center justify-center text-[10px] text-slate-500">
+                    Ad Unit Zone
                 </div>
             </div>
-
-            <!-- Status Bar Footer -->
-            <footer class="bg-darkPanel border-t border-darkBorder px-4 py-1.5 flex justify-between items-center text-xs text-slate-400">
-                <div class="flex space-x-4">
-                    <span id="wordCount">Words: 0</span>
-                    <span id="charCount">Characters: 0</span>
-                </div>
-                <div class="flex items-center space-x-2">
-                    <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                    <span class="text-emerald-400 font-medium">Auto-saved Locally</span>
-                </div>
-            </footer>
-        </main>
+        </div>
     </div>
 
-    <!-- Application Script Logic -->
+    <!-- Script Logic -->
     <script>
-        let notes = JSON.parse(localStorage.getItem('nexus_notes')) || [
-            { id: '1', title: 'Welcome Note 📝', content: '# Welcome to NexusPad Pro!\n\n- Fully responsive online utility.\n- Client-side data storage (Secure & Private).\n- Toggle markdown view on top right.\n\nStart writing away!' }
+        let notes = JSON.parse(localStorage.getItem('nexus_v2_notes')) || [
+            { id: '1', title: 'Welcome Note', content: '# Welcome to NexusPad\n\n- Clean minimalist layout\n- Tap bottom bar for actions\n- Open menu for saved notes' }
         ];
-        let currentNoteId = notes[0] ? notes[0].id : '1';
+        let currentId = notes[0].id;
+        let isPreview = false;
 
         const notepad = document.getElementById('notepad');
-        const wordCountDisplay = document.getElementById('wordCount');
-        const charCountDisplay = document.getElementById('charCount');
         const previewPane = document.getElementById('previewPane');
-        const editorPane = document.getElementById('editorPane');
-        let isPreviewMode = false;
 
-        function initApp() {
-            renderTabs();
-            loadActiveNote();
-            updateStats();
+        function loadNote() {
+            const note = notes.find(n => n.id === currentId);
+            if (note) notepad.value = note.content;
         }
 
-        function renderTabs() {
-            const tabList = document.getElementById('tabList');
-            const mobileTabList = document.getElementById('mobileTabList');
-            tabList.innerHTML = '';
-            mobileTabList.innerHTML = '';
-
-            notes.forEach(note => {
-                const isActive = note.id === currentNoteId;
-                
-                // Desktop Tab
-                const tab = document.createElement('div');
-                tab.className = `group flex justify-between items-center px-3 py-2 rounded-lg cursor-pointer text-xs font-medium transition ${isActive ? 'bg-indigo-600/30 text-indigo-300 border border-indigo-500/40' : 'hover:bg-slate-800 text-slate-300'}`;
-                tab.innerHTML = `
-                    <span class="truncate flex-1" onclick="switchNote('${note.id}')">${escapeHtml(note.title)}</span>
-                    ${notes.length > 1 ? `<button onclick="deleteNote(event, '${note.id}')" class="opacity-0 group-hover:opacity-100 text-slate-400 hover:text-red-400 ml-2">×</button>` : ''}
-                `;
-                tabList.appendChild(tab);
-
-                // Mobile Tab
-                const mTab = document.createElement('button');
-                mTab.className = `px-3 py-1 rounded text-xs whitespace-nowrap transition ${isActive ? 'bg-indigo-600 text-white' : 'bg-slate-800 text-slate-300'}`;
-                mTab.innerText = note.title;
-                mTab.onclick = () => switchNote(note.id);
-                mobileTabList.appendChild(mTab);
-            });
-        }
-
-        function loadActiveNote() {
-            const current = notes.find(n => n.id === currentNoteId);
-            if (current) {
-                notepad.value = current.content;
-            }
-        }
-
-        notepad.addEventListener('input', function() {
-            const current = notes.find(n => n.id === currentNoteId);
-            if (current) {
-                current.content = notepad.value;
-                // Auto generate title from first line
+        notepad.addEventListener('input', () => {
+            const note = notes.find(n => n.id === currentId);
+            if (note) {
+                note.content = notepad.value;
                 const firstLine = notepad.value.split('\n')[0].trim();
-                current.title = firstLine ? firstLine.substring(0, 20) + (firstLine.length > 20 ? '...' : '') : 'Untitled Note';
-                saveToStorage();
-                renderTabs();
-                updateStats();
-                if (isPreviewMode) updatePreview();
+                note.title = firstLine ? firstLine.substring(0, 18) + (firstLine.length > 18 ? '...' : '') : 'Untitled Note';
+                localStorage.setItem('nexus_v2_notes', JSON.stringify(notes));
             }
         });
 
-        function updateStats() {
-            const text = notepad.value;
-            const words = text.trim() ? text.trim().split(/\s+/).length : 0;
-            const chars = text.length;
-            wordCountDisplay.innerText = `Words: ${words}`;
-            charCountDisplay.innerText = `Characters: ${chars}`;
-        }
-
-        function createNewNote() {
-            const newId = Date.now().toString();
-            notes.push({ id: newId, title: 'New Note...', content: '# New Document\n\nStart typing here...' });
-            currentNoteId = newId;
-            saveToStorage();
-            initApp();
-        }
-
-        function switchNote(id) {
-            currentNoteId = id;
-            loadActiveNote();
-            renderTabs();
-            updateStats();
-            if (isPreviewMode) updatePreview();
-        }
-
-        function deleteNote(e, id) {
-            e.stopPropagation();
-            if (notes.length <= 1) return;
-            notes = notes.filter(n => n.id !== id);
-            if (currentNoteId === id) {
-                currentNoteId = notes[0].id;
-            }
-            saveToStorage();
-            initApp();
-        }
-
-        function saveToStorage() {
-            localStorage.setItem('nexus_notes', JSON.stringify(notes));
-        }
-
         function togglePreview() {
-            isPreviewMode = !isPreviewMode;
+            isPreview = !isPreview;
             const btn = document.getElementById('previewBtn');
-            if (isPreviewMode) {
-                btn.classList.add('bg-indigo-600', 'text-white');
-                editorPane.classList.add('hidden');
+            if (isPreview) {
+                btn.classList.add('bg-emerald-600', 'text-white', 'border-emerald-500');
+                previewPane.innerHTML = marked.parse(notepad.value);
+                notepad.classList.add('hidden');
                 previewPane.classList.remove('hidden');
-                updatePreview();
             } else {
-                btn.classList.remove('bg-indigo-600', 'text-white');
-                editorPane.classList.remove('hidden');
+                btn.classList.remove('bg-emerald-600', 'text-white', 'border-emerald-500');
+                notepad.classList.remove('hidden');
                 previewPane.classList.add('hidden');
             }
         }
 
-        function updatePreview() {
-            previewPane.innerHTML = marked.parse(notepad.value);
+        function openMenu() {
+            const list = document.getElementById('notesList');
+            list.innerHTML = '';
+            notes.forEach(n => {
+                const item = document.createElement('div');
+                item.className = `p-2.5 rounded-lg text-xs cursor-pointer flex justify-between items-center ${n.id === currentId ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' : 'bg-slate-950 text-slate-300'}`;
+                item.innerHTML = `<span>${n.title}</span>`;
+                item.onclick = () => { currentId = n.id; loadNote(); closeMenu(); };
+                list.appendChild(item);
+            });
+            document.getElementById('sideMenu').classList.remove('hidden');
         }
 
+        function closeMenu() { document.getElementById('sideMenu').classList.add('hidden'); }
+        function createNewNote() {
+            const id = Date.now().toString();
+            notes.push({ id, title: 'New Note', content: 'Start writing...' });
+            currentId = id;
+            localStorage.setItem('nexus_v2_notes', JSON.stringify(notes));
+            loadNote();
+        }
+        function copyToClipboard() { navigator.clipboard.writeText(notepad.value); alert('Copied!'); }
         function downloadNote() {
-            const current = notes.find(n => n.id === currentNoteId);
             const blob = new Blob([notepad.value], { type: 'text/plain' });
-            const anchor = document.createElement('a');
-            anchor.href = window.URL.createObjectURL(blob);
-            anchor.download = `${current.title.replace(/[^a-z0-9]/gi, '_').toLowerCase() || 'note'}.txt`;
-            anchor.click();
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'note.txt';
+            a.click();
         }
-
-        function copyToClipboard() {
-            navigator.clipboard.writeText(notepad.value);
-            alert('Note copied to clipboard!');
-        }
-
         function clearCurrentNote() {
-            if (confirm("Are you sure you want to clear this note?")) {
-                notepad.value = '';
-                const current = notes.find(n => n.id === currentNoteId);
-                current.content = '';
-                current.title = 'Empty Note';
-                saveToStorage();
-                renderTabs();
-                updateStats();
-            }
+            if(confirm('Clear this note?')) { notepad.value = ''; notepad.dispatchEvent(new Event('input')); }
         }
 
-        function escapeHtml(text) {
-            return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-        }
-
-        // Initialize on load
-        window.onload = initApp;
+        loadNote();
     </script>
 </body>
-  </html>
+</html>
