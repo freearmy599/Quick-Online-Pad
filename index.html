@@ -28,7 +28,6 @@
         }
     </script>
     <style>
-        /* Dynamic Theme Variables */
         :root[data-theme="emerald"] { --bg-base: #030712; --bg-panel: #111827; --border-color: #1f2937; --accent-color: #10b981; }
         :root[data-theme="cyberpunk"] { --bg-base: #05050a; --bg-panel: #0f0f1a; --border-color: #1f1f3a; --accent-color: #f43f5e; }
         :root[data-theme="midnight"] { --bg-base: #090d16; --bg-panel: #101726; --border-color: #1e293b; --accent-color: #6366f1; }
@@ -39,17 +38,17 @@
 <body class="h-[100dvh] flex flex-col overflow-hidden font-sans">
 
     <!-- Top Header -->
-    <header class="bg-themePanel border-b border-themeBorder px-4 py-2.5 flex justify-between items-center shrink-0">
-        <div class="flex items-center space-x-2">
+    <header class="bg-themePanel border-b border-themeBorder px-3 py-2 flex justify-between items-center shrink-0">
+        <div class="flex items-center space-x-1.5">
             <div class="w-2.5 h-2.5 rounded-full" style="background-color: var(--accent-color);"></div>
-            <h1 class="font-black tracking-wider text-sm">NEXUS<span style="color: var(--accent-color);">PAD</span></h1>
+            <h1 class="font-black tracking-wider text-xs">NEXUS<span style="color: var(--accent-color);">PAD</span></h1>
         </div>
         
         <!-- Header Actions -->
-        <div class="flex items-center space-x-1.5">
-            <button onclick="togglePreview()" id="previewBtn" class="px-2.5 py-1 rounded-lg bg-themeBase text-xs font-medium border border-themeBorder active:scale-95 transition">Preview</button>
-            <button onclick="openStatsModal()" class="px-2.5 py-1 rounded-lg bg-themeBase text-xs font-medium border border-themeBorder">📊 Stats</button>
-            <button onclick="openMenu()" class="p-1.5 rounded-lg bg-themeBase border border-themeBorder">
+        <div class="flex items-center space-x-1">
+            <button onclick="togglePreview()" id="previewBtn" class="px-2 py-1 rounded bg-themeBase text-[11px] font-medium border border-themeBorder transition">Preview</button>
+            <button onclick="openStatsModal()" class="px-2 py-1 rounded bg-themeBase text-[11px] font-medium border border-themeBorder">📊 Stats</button>
+            <button onclick="openMenu()" class="p-1 rounded bg-themeBase border border-themeBorder">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/></svg>
             </button>
         </div>
@@ -60,29 +59,29 @@
         <!-- Editor View -->
         <textarea id="notepad" class="w-full h-full bg-themeBase p-4 text-slate-100 text-sm leading-relaxed focus:outline-none resize-none font-mono" placeholder="Type notes or markdown here..."></textarea>
         
-        <!-- Markdown & Outline Preview View -->
+        <!-- Markdown Preview View -->
         <div id="previewPane" class="w-full h-full bg-themePanel/40 p-5 overflow-y-auto hidden prose prose-invert max-w-none text-sm"></div>
     </main>
 
     <!-- Bottom Action Toolbar -->
-    <nav class="bg-themePanel border-t border-themeBorder px-2 py-2 flex justify-around items-center shrink-0 text-[10px]">
+    <nav class="bg-themePanel border-t border-themeBorder px-1 py-2 flex justify-around items-center shrink-0 text-[10px]">
         <button onclick="createNewNote()" class="flex flex-col items-center text-slate-400 hover:text-slate-100">
-            <span class="text-base mb-0.5">➕</span> New
+            <span class="text-sm mb-0.5">➕</span> New
         </button>
         <button onclick="toggleEncryptNote()" id="lockBtn" class="flex flex-col items-center text-slate-400 hover:text-slate-100">
-            <span class="text-base mb-0.5">🔒</span> Lock
+            <span class="text-sm mb-0.5">🔒</span> Lock
         </button>
         <button onclick="generateShareLink()" class="flex flex-col items-center text-slate-400 hover:text-slate-100">
-            <span class="text-base mb-0.5">🔗</span> Share Link
+            <span class="text-sm mb-0.5">🔗</span> Share
         </button>
         <button onclick="exportFile('txt')" class="flex flex-col items-center text-slate-400 hover:text-slate-100">
-            <span class="text-base mb-0.5">📄</span> TXT
+            <span class="text-sm mb-0.5">📄</span> TXT
         </button>
         <button onclick="exportFile('html')" class="flex flex-col items-center text-slate-400 hover:text-slate-100">
-            <span class="text-base mb-0.5">🌐</span> HTML
+            <span class="text-sm mb-0.5">🌐</span> HTML
         </button>
         <button onclick="clearCurrentNote()" class="flex flex-col items-center text-red-400">
-            <span class="text-base mb-0.5">🗑️</span> Clear
+            <span class="text-sm mb-0.5">🗑️</span> Clear
         </button>
     </nav>
 
@@ -105,13 +104,28 @@
                 </div>
             </div>
 
-            <div class="text-[10px] text-slate-400 mb-1">Saved Documents</div>
-            <div id="notesList" class="flex-1 overflow-y-auto space-y-1.5 mb-3"></div>
+            <!-- Extra Utility Features -->
+            <div class="mb-3 space-y-2">
+                <span class="text-[10px] text-slate-400 block">Text Utilities</span>
+                <div class="grid grid-cols-3 gap-1">
+                    <button onclick="transformText('upper')" class="bg-themeBase border border-themeBorder rounded py-1 text-[10px] hover:bg-themeBorder">UPPER</button>
+                    <button onclick="transformText('lower')" class="bg-themeBase border border-themeBorder rounded py-1 text-[10px] hover:bg-themeBorder">lower</button>
+                    <button onclick="openFindReplace()" class="bg-themeBase border border-themeBorder rounded py-1 text-[10px] hover:bg-themeBorder">Find/Replace</button>
+                </div>
+            </div>
 
-            <!-- Ad Space / Custom Section Placeholder -->
-            <div class="bg-themeBase border border-themeBorder rounded-lg p-2.5 text-center">
+            <div class="text-[10px] text-slate-400 mb-1 flex justify-between items-center">
+                <span>Saved Documents</span>
+                <span id="docCount" class="text-[9px] text-slate-500"></span>
+            </div>
+            
+            <!-- Saved Notes List with Delete Option -->
+            <div id="notesList" class="flex-1 overflow-y-auto space-y-1.5 mb-3 pr-1"></div>
+
+            <!-- AdSense Status Zone -->
+            <div class="bg-themeBase border border-themeBorder rounded-lg p-2 text-center">
                 <span class="text-[9px] text-slate-500 uppercase tracking-wider block mb-1">Workspace Status</span>
-                <div class="h-14 bg-themePanel rounded border border-dashed border-themeBorder flex items-center justify-center text-[10px] text-slate-500">
+                <div class="h-10 bg-themePanel rounded border border-dashed border-themeBorder flex items-center justify-center text-[10px] text-slate-500">
                     Ready for AdSense
                 </div>
             </div>
@@ -129,8 +143,8 @@
 
     <!-- Script Logic -->
     <script>
-        let notes = JSON.parse(localStorage.getItem('nexus_v3_notes')) || [
-            { id: '1', title: 'Welcome Document', content: '# Welcome to NexusPad Pro\n\n- End-to-end local encryption support\n- Share notes instantly via URL hash\n- Multiple themes & advanced stats', password: null }
+        let notes = JSON.parse(localStorage.getItem('nexus_v4_notes')) || [
+            { id: '1', title: 'Welcome Document', content: '# Welcome to NexusPad Pro\n\n- Delete notes using the trash icon in menu\n- Transform text case instantly\n- Fully secure local storage', password: null }
         ];
         let currentId = notes[0].id;
         let isPreview = false;
@@ -140,7 +154,6 @@
         const notepad = document.getElementById('notepad');
         const previewPane = document.getElementById('previewPane');
 
-        // Check URL Hash on Load for Shared Notes
         window.addEventListener('DOMContentLoaded', () => {
             if(window.location.hash.startsWith('#note=')) {
                 try {
@@ -150,7 +163,7 @@
                     notes.push({ id: newId, title: 'Shared Note', content: decodedText, password: null });
                     currentId = newId;
                     saveNotes();
-                    window.location.hash = ''; // clear hash
+                    window.location.hash = '';
                 } catch(e) { console.error("Failed to parse shared note"); }
             }
             loadNote();
@@ -158,7 +171,10 @@
 
         function loadNote() {
             const note = notes.find(n => n.id === currentId);
-            if (!note) return;
+            if (!note) {
+                if(notes.length > 0) { currentId = notes[0].id; loadNote(); }
+                return;
+            }
             if (note.password) {
                 const pass = prompt("This note is encrypted. Enter password:");
                 try {
@@ -181,7 +197,7 @@
             }
         });
 
-        function saveNotes() { localStorage.setItem('nexus_v3_notes', JSON.stringify(notes)); }
+        function saveNotes() { localStorage.setItem('nexus_v4_notes', JSON.stringify(notes)); }
 
         function togglePreview() {
             isPreview = !isPreview;
@@ -243,7 +259,7 @@
             const encoded = btoa(encodeURIComponent(notepad.value));
             const shareUrl = `${window.location.origin}${window.location.pathname}#note=${encoded}`;
             navigator.clipboard.writeText(shareUrl);
-            alert("Shareable link copied to clipboard! (Data is embedded directly in URL hash)");
+            alert("Shareable link copied to clipboard!");
         }
 
         function exportFile(type) {
@@ -262,11 +278,27 @@
             a.click();
         }
 
+        function transformText(type) {
+            if(type === 'upper') notepad.value = notepad.value.toUpperCase();
+            if(type === 'lower') notepad.value = notepad.value.toLowerCase();
+            notepad.dispatchEvent(new Event('input'));
+        }
+
+        function openFindReplace() {
+            const target = prompt("Find what text?");
+            if(!target) return;
+            const replacement = prompt("Replace with what?");
+            if(replacement === null) return;
+            notepad.value = notepad.value.replaceAll(target, replacement);
+            notepad.dispatchEvent(new Event('input'));
+            alert("Replaced successfully!");
+        }
+
         function openStatsModal() {
             const text = notepad.value;
             const words = text.trim() ? text.trim().split(/\s+/).length : 0;
             const chars = text.length;
-            const readingTime = Math.ceil(words / 200); // avg 200 words per minute
+            const readingTime = Math.ceil(words / 200);
             
             document.getElementById('statsContent').innerHTML = `
                 <div class="flex justify-between border-b border-themeBorder pb-1"><span>Word Count:</span> <strong>${words}</strong></div>
@@ -279,27 +311,54 @@
 
         function openMenu() {
             const list = document.getElementById('notesList');
+            document.getElementById('docCount').innerText = `${notes.length} saved`;
             list.innerHTML = '';
+            
             notes.forEach(n => {
                 const item = document.createElement('div');
-                item.className = `p-2 rounded text-xs cursor-pointer flex justify-between items-center ${n.id === currentId ? 'bg-themeBase font-bold border border-themeBorder' : 'text-slate-400'}`;
-                item.innerHTML = `<span>${n.title} ${n.password ? '🔒' : ''}</span>`;
-                item.onclick = () => { currentId = n.id; loadNote(); closeMenu(); };
+                item.className = `p-2 rounded text-xs cursor-pointer flex justify-between items-center ${n.id === currentId ? 'bg-themeBase font-bold border border-themeBorder' : 'text-slate-400 bg-themePanel/60 hover:bg-themeBase'}`;
+                
+                const titleSpan = document.createElement('span');
+                titleSpan.className = "truncate flex-1";
+                titleSpan.innerText = `${n.title} ${n.password ? '🔒' : ''}`;
+                titleSpan.onclick = () => { currentId = n.id; loadNote(); closeMenu(); };
+                
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = "text-slate-500 hover:text-red-400 p-1 ml-2 text-sm";
+                deleteBtn.innerHTML = "🗑️";
+                deleteBtn.onclick = (e) => { e.stopPropagation(); deleteNote(n.id); };
+
+                item.appendChild(titleSpan);
+                item.appendChild(deleteBtn);
                 list.appendChild(item);
             });
             document.getElementById('sideMenu').classList.remove('hidden');
         }
+
+        function deleteNote(id) {
+            if(notes.length <= 1) { alert("You must keep at least one note!"); return; }
+            if(confirm("Are you sure you want to delete this note?")) {
+                notes = notes.filter(n => n.id !== id);
+                saveNotes();
+                if(currentId === id) { currentId = notes[0].id; loadNote(); }
+                openMenu(); // refresh drawer list
+            }
+        }
+
         function closeMenu() { document.getElementById('sideMenu').classList.add('hidden'); }
+        
         function createNewNote() {
             const id = Date.now().toString();
             notes.push({ id, title: 'New Note', content: 'Start typing...', password: null });
             currentId = id;
             saveNotes();
             loadNote();
+            closeMenu();
         }
+
         function clearCurrentNote() {
-            if(confirm('Clear current note?')) { notepad.value = ''; notepad.dispatchEvent(new Event('input')); }
+            if(confirm('Clear current note content?')) { notepad.value = ''; notepad.dispatchEvent(new Event('input')); }
         }
     </script>
 </body>
-</html>
+                    </html>
